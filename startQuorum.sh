@@ -1,3 +1,10 @@
+#!/bin/bash
+
+# required parameters for this script:
+#   KEEP_FILES=false NODE_NAME=node1 CONSENSUS=istanbul
+# optional parameters:
+#   DEPENDENT_IP
 cd /app/QuorumNetworkManager
-KEEP_FILES=false NODE_NAME=node1 CONSENSUS=istanbul node setupFromConfig.js &
+if [ -n "$DEPENDENT_IP" ]; then PORT=3000 HOST_IP=$DEPENDENT_IP ../waitForOtherNode.sh; fi
+node setupFromConfig.js &
 bash /app/checkPort.sh
