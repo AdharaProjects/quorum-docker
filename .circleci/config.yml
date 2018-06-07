@@ -12,6 +12,7 @@ jobs:
       #
       # - checkout
       # - run:#d examples && docker-compose up -d
+      - run: docker network rm examples_two_node_quorum
       - run: docker network create --subnet "172.14.0.0/16" examples_two_node_quorum
       - run: echo "docker exec -it examples_node_1_1 bash"
       - run: ls -al
