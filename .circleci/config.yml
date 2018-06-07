@@ -4,7 +4,7 @@ jobs:
   build:
     working_directory: ~/tmp
     docker:
-      - image: docker-compose-node:latest
+      - image: jasoons/basic-docker:0.0.0
     steps:
       - checkout
       - setup_remote_docker
