@@ -7,16 +7,13 @@ RUN apt-get update -y
 RUN apt-get -y install curl
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash
 RUN apt-get install -y nodejs
-# RUN apt-get install -y libsodium-dev
-# RUN apt-get install -y netcat
+RUN apt-get install -y libsodium-dev
+RUN apt-get install -y netcat
 
-# # Copy the current directory contents into the container at /app
+# Copy the current directory contents into the container at /app
 ADD . /app
 
-RUN npm i
-#
-# ENV PATH "$PATH:/app"
+ENV PATH "$PATH:/app"
 
 # Run start script when the container launches
-CMD [ "npm", "test" ]
-# CMD [ "docker-compose", "up" ]
+CMD [ "bash", "startQuorum.sh" ]
