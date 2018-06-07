@@ -1,26 +1,22 @@
 
 version: 2
 jobs:
-  quorumNet:
+  build:
     working_directory: ~/tmp
-    machine:
-      docker_layer_caching: true
-      # image: docker-compose-node:latest
-      # image: circleci/classic:latest
+    docker:
+      - image: docker-compose-node:latest
     steps:
-      # - run: mkdir /tmp/_circleci_local_build_repo/
-      #
-      # - checkout
-      # - run:#d examples && docker-compose up -d
-      - run: docker network rm examples_two_node_quorum
-      - run: docker network create --subnet "172.14.0.0/16" examples_two_node_quorum
-      - run: echo "docker exec -it examples_node_1_1 bash"
-      - run: ls -al
-      # - run: chmod +x ./waitForOtherNode.sh
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Create virtual network for test
+          command: docker network create --subnet "172.14.0.0/16" examples_three_node_quorum
+
       - run:
           name: Start node 1
           command: |
-            docker run --name n1 --network=examples_two_node_quorum --ip=172.14.0.2 \
+            docker run --name n1 --network=examples_three_node_quorum --ip=172.14.0.2 \
               -e KEEP_FILES='false' \
               -e NODE_NAME='node1' \
               -e CONSENSUS='istanbul' \
@@ -31,7 +27,7 @@ jobs:
       - run:
           name: Start node 2
           command: |
-            docker run --name n2 --network=examples_two_node_quorum --ip=172.14.0.3 \
+            docker run --name n2 --network=examples_three_node_quorum --ip=172.14.0.3 \
               -e KEEP_FILES'=false' \
               -e NODE_NAME'=node2' \
               -e CONSENSUS'=istanbul' \
@@ -44,7 +40,7 @@ jobs:
       - run:
           name: Start node 3
           command: |
-            docker run --name n3 --network=examples_two_node_quorum --ip=172.14.0.4 \
+            docker run --name n3 --network=examples_three_node_quorum --ip=172.14.0.4 \
               -e KEEP_FILES'=false' \
               -e NODE_NAME'=node2' \
               -e CONSENSUS'=istanbul' \
@@ -53,24 +49,19 @@ jobs:
               -e ROLE'=dynamicPeer' \
               -e DEPENDENT_IP'=172.14.0.3' \
               -d jasoons/simple-local-quorum-istanbul:temp-test
-      # - run: apt-get install -y netcat
-      # - run: PORT=20010 HOST_IP=172.14.0.4 ./waitForOtherNode.sh
-      # - run: cd /tmp/_circleci_local_build_repo/test && npm i && npm test
-  testQuorum:
-    working_directory: ~/tmp
-    docker:
-      - image: jasoons/example-test
-    # image: circleci/classic:latest
-    steps:
-      - checkout
-      # - run: sleep 1000
-      - run: npm i
-      - run: npm test
-      # - run: mkdir /tmp/_circleci_local_build_repo/
-      #
-workflows:
-    version: 2
-    test:
-        jobs:
-          - quorumNet
-          - testQuorum
+      - run:
+          name: Test the 3 node network
+          command: |
+            docker run --name test --network=examples_three_node_quorum --ip=172.14.0.5 -dt jasoons/docker-qnm-tester
+            docker cp . test:/app
+            docker exec test npm install
+            docker exec test chmod +x ./waitForOtherNode.sh
+            docker exec -e PORT=20010 -e HOST_IP=172.14.0.4 test ./waitForOtherNode.sh
+            docker exec test npm test
+
+      - run:
+          name: Cleanup remote docker
+          command: |
+            docker stop n1 n2 n3 test
+            docker rm n1 n2 n3 test
+            docker network rm examples_three_node_quorum

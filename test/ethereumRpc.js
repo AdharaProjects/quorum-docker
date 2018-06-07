@@ -1,5 +1,6 @@
 const request = require('request');
 
+// helper function that returns a promise of the result of an ethereum-rpc call to a specified url
 function rpcRequest(url, body) {
   const options = {
     url,
@@ -11,11 +12,11 @@ function rpcRequest(url, body) {
     body
   }
   return new Promise(function(resolve, reject){
-    request(options, (error, response, body) => {
+    request(options, (error, response, responseBody) => {
         if (error) {
           reject('Connect Error: ' + error.toString())
         } else {
-          resolve(body)
+          resolve(responseBody)
         }
     })
   })
