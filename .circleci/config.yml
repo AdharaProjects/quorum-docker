@@ -63,7 +63,7 @@ jobs:
     # image: circleci/classic:latest
     steps:
       - checkout
-      - run: sleep 1000
+      # - run: sleep 1000
       - run: npm i
       - run: npm test
       # - run: mkdir /tmp/_circleci_local_build_repo/
