@@ -1,0 +1,75 @@
+
+version: 2
+jobs:
+  quorumNet:
+    working_directory: ~/tmp
+    machine:
+      docker_layer_caching: true
+      # image: docker-compose-node:latest
+      # image: circleci/classic:latest
+    steps:
+      # - run: mkdir /tmp/_circleci_local_build_repo/
+      #
+      # - checkout
+      # - run:#d examples && docker-compose up -d
+      - run: docker network create --subnet "172.14.0.0/16" examples_two_node_quorum
+      - run: echo "docker exec -it examples_node_1_1 bash"
+      - run: ls -al
+      # - run: chmod +x ./waitForOtherNode.sh
+      - run:
+          name: Start node 1
+          command: |
+            docker run --name n1 --network=examples_two_node_quorum --ip=172.14.0.2 \
+              -e KEEP_FILES='false' \
+              -e NODE_NAME='node1' \
+              -e CONSENSUS='istanbul' \
+              -e ROLE='coordinator' \
+              -e IP='172.14.0.2' \
+              -d jasoons/simple-local-quorum-istanbul:temp-test
+
+      - run:
+          name: Start node 2
+          command: |
+            docker run --name n2 --network=examples_two_node_quorum --ip=172.14.0.3 \
+              -e KEEP_FILES'=false' \
+              -e NODE_NAME'=node2' \
+              -e CONSENSUS'=istanbul' \
+              -e IP'=172.14.0.3' \
+              -e COORDINATING_IP'=172.14.0.2' \
+              -e ROLE'=dynamicPeer' \
+              -e DEPENDENT_IP'=172.14.0.2' \
+              -d jasoons/simple-local-quorum-istanbul:temp-test
+
+      - run:
+          name: Start node 3
+          command: |
+            docker run --name n3 --network=examples_two_node_quorum --ip=172.14.0.4 \
+              -e KEEP_FILES'=false' \
+              -e NODE_NAME'=node2' \
+              -e CONSENSUS'=istanbul' \
+              -e IP'=172.14.0.4' \
+              -e COORDINATING_IP'=172.14.0.2' \
+              -e ROLE'=dynamicPeer' \
+              -e DEPENDENT_IP'=172.14.0.3' \
+              -d jasoons/simple-local-quorum-istanbul:temp-test
+      # - run: apt-get install -y netcat
+      # - run: PORT=20010 HOST_IP=172.14.0.4 ./waitForOtherNode.sh
+      # - run: cd /tmp/_circleci_local_build_repo/test && npm i && npm test
+    testQuorum:
+      working_directory: ~/tmp
+      docker:
+        - image: jasoons/example-test
+      # image: circleci/classic:latest
+      steps:
+        - checkout
+        - run: sleep 1000
+        - run: npm i
+        - run: npm test
+        # - run: mkdir /tmp/_circleci_local_build_repo/
+        #
+workflows:
+    version: 2
+    test:
+        jobs:
+          - quorumNet
+          - testQuorum

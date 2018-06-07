@@ -5,6 +5,6 @@
 # optional parameters:
 #   DEPENDENT_IP
 cd /app/QuorumNetworkManager
-if [ -n "$DEPENDENT_IP" ]; then PORT=3000 HOST_IP=$DEPENDENT_IP ../waitForOtherNode.sh; fi
+if [ -n "$DEPENDENT_IP" ]; then PORT=20010 HOST_IP=$DEPENDENT_IP ../waitForOtherNode.sh; fi
 node setupFromConfig.js &
 bash /app/checkPort.sh
