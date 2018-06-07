@@ -55,18 +55,18 @@ jobs:
       # - run: apt-get install -y netcat
       # - run: PORT=20010 HOST_IP=172.14.0.4 ./waitForOtherNode.sh
       # - run: cd /tmp/_circleci_local_build_repo/test && npm i && npm test
-    testQuorum:
-      working_directory: ~/tmp
-      docker:
-        - image: jasoons/example-test
-      # image: circleci/classic:latest
-      steps:
-        - checkout
-        - run: sleep 1000
-        - run: npm i
-        - run: npm test
-        # - run: mkdir /tmp/_circleci_local_build_repo/
-        #
+  testQuorum:
+    working_directory: ~/tmp
+    docker:
+      - image: jasoons/example-test
+    # image: circleci/classic:latest
+    steps:
+      - checkout
+      - run: sleep 1000
+      - run: npm i
+      - run: npm test
+      # - run: mkdir /tmp/_circleci_local_build_repo/
+      #
 workflows:
     version: 2
     test:
