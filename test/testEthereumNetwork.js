@@ -15,7 +15,6 @@ describe("3 node ethereum Network", function() {
         '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}'
       )
     ).result
-    console.log('latestBlock', latestBlock)
     const latestBlockHashNode1 = JSON.parse(
       await ethereumRpc(
         node1RpcUrl,
