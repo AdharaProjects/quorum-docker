@@ -1,7 +1,7 @@
 version: '2'
 services:
   node_1:
-    image: jasoons/simple-local-quorum-istanbul:temp-test
+    image: adharaprojects/basic-quorum:0.0.0
     environment:
       - KEEP_FILES=false
       - NODE_NAME=node1
@@ -12,7 +12,7 @@ services:
       three_node_quorum:
         ipv4_address: '172.14.0.2'
   node_2:
-    image: jasoons/simple-local-quorum-istanbul:temp-test
+    image: adharaprojects/basic-quorum:0.0.0
     environment:
       - KEEP_FILES=false
       - NODE_NAME=node2
@@ -27,7 +27,7 @@ services:
       three_node_quorum:
         ipv4_address: '172.14.0.3'
   node_3:
-    image: jasoons/simple-local-quorum-istanbul:temp-test
+    image: adharaprojects/basic-quorum:0.0.0
     environment:
       - KEEP_FILES=false
       - NODE_NAME=node3
@@ -49,24 +49,3 @@ networks:
       driver: default
       config:
       - subnet: 172.14.0.0/16
-
-
-# Running the following 2 commands consecutively should create a two node network (this assumes that you alreday have a docker network called examples_two_node_quorum):
-
-# docker run --name n1 --network=examples_two_node_quorum --ip=172.14.0.5 \
-# -e KEEP_FILES='false' \
-# -e NODE_NAME='node1' \
-# -e CONSENSUS='istanbul' \
-# -e ROLE='coordinator' \
-# -e IP='172.14.0.5' \
-# jasoons/simple-local-quorum-istanbul:temp-test
-
-# docker run --name n2 --network=examples_two_node_quorum --ip=172.14.0.6 \
-# -e KEEP_FILES'=false' \
-# -e NODE_NAME'=node2' \
-# -e CONSENSUS'=istanbul' \
-# -e IP'=172.14.0.6' \
-# -e COORDINATING_IP'=172.14.0.5' \
-# -e ROLE'=dynamicPeer' \
-# -e DEPENDENT_IP'=172.14.0.5' \
-# jasoons/simple-local-quorum-istanbul:temp-test
