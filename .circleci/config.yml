@@ -39,7 +39,6 @@ jobs:
               -e IP'=172.15.0.3' \
               -e COORDINATING_IP'=172.15.0.2' \
               -e ROLE'=dynamicPeer' \
-              -e DEPENDENT_IP'=172.15.0.2' \
               -d adharaprojects/basic-quorum:temp-ci-test
 
       - run:
@@ -52,7 +51,6 @@ jobs:
               -e IP'=172.15.0.4' \
               -e COORDINATING_IP'=172.15.0.2' \
               -e ROLE'=dynamicPeer' \
-              -e DEPENDENT_IP'=172.15.0.3' \
               -d adharaprojects/basic-quorum:temp-ci-test
       - run:
           name: Test the 3 node network
