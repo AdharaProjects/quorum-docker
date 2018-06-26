@@ -1,9 +1,9 @@
 const expect = require('chai').expect
 const ethereumRpc = require('./ethereumRpc')
 
-const node1RpcUrl = 'http://172.14.0.2:20010'
-const node2RpcUrl = 'http://172.14.0.3:20010'
-const node3RpcUrl = 'http://172.14.0.4:20010'
+const node1RpcUrl = 'http://' + (process.env.NODE_1_URL || '172.14.0.2' ) + ':20010'
+const node2RpcUrl = 'http://' + (process.env.NODE_2_URL || '172.14.0.3' ) + ':20010'
+const node3RpcUrl = 'http://' + (process.env.NODE_3_URL || '172.14.0.4' ) + ':20010'
 
 describe("3 node ethereum Network", function() {
   this.timeout(10*1000)

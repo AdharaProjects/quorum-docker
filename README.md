@@ -12,36 +12,38 @@ To run the tests locally [install the CircleCi tool](https://circleci.com/docs/2
 
 A pre-configured 3 node network can be found in the `./examples/docker-compose.yml` file. To run this code make sure you have both docker and docker-compose installed (see the ['Requirement'](#requirements) section above) and run the command `docker-compose up -d`.
 
-To manually run a 3 node network (this assumes that you have already [created](#create-and-manage-a-virtual-network) a docker network called examples_two_node_quorum):
+To manually run a 3 node network (this assumes that you have already [created](#create-and-manage-a-virtual-network) a docker network called examples_two_node_quorum `docker network create examples_node_quorum_net --subnet 172.14.1.1/16`):
 ```bash
-docker run --name n1 --network=examples_two_node_quorum --ip=172.14.0.5 \
+docker run --name n1 --network=examples_node_quorum_net --ip=172.14.1.5 \
  -e KEEP_FILES='false' \
  -e NODE_NAME='node1' \
  -e CONSENSUS='istanbul' \
  -e ROLE='coordinator' \
- -e IP='172.14.0.5' \
- jasoons/simple-local-quorum-istanbul:0.0.1
+ -e IP='172.14.1.5' \
+ adharaprojects/basic-quorum:0.0.1
 
-docker run --name n2 --network=examples_two_node_quorum --ip=172.14.0.6 \
+docker run --name n2 --network=examples_node_quorum_net --ip=172.14.1.6 \
  -e KEEP_FILES'=false' \
  -e NODE_NAME'=node2' \
  -e CONSENSUS'=istanbul' \
- -e IP'=172.14.0.6' \
- -e COORDINATING_IP'=172.14.0.5' \
+ -e IP'=172.14.1.6' \
+ -e COORDINATING_IP'=172.14.1.5' \
  -e ROLE'=dynamicPeer' \
- -e DEPENDENT_IP'=172.14.0.5' \
- jasoons/simple-local-quorum-istanbul:0.0.1
+ -e DEPENDENT_IP'=172.14.1.5' \
+ adharaprojects/basic-quorum:0.0.1
 
-docker run --name n3 --network=examples_two_node_quorum --ip=172.14.0.7 \
+docker run --name n3 --network=examples_node_quorum_net --ip=172.14.1.7 \
  -e KEEP_FILES'=false' \
  -e NODE_NAME'=node2' \
  -e CONSENSUS'=istanbul' \
- -e IP'=172.14.0.7' \
- -e COORDINATING_IP'=172.14.0.5' \
+ -e IP'=172.14.1.7' \
+ -e COORDINATING_IP'=172.14.1.5' \
  -e ROLE'=dynamicPeer' \
- -e DEPENDENT_IP'=172.14.0.6' \
- jasoons/simple-local-quorum-istanbul:0.0.1
+ -e DEPENDENT_IP'=172.14.1.6' \
+ adharaprojects/basic-quorum:0.0.1
 ```
+
+Note: you can use `-d` in the above commands to run the containers in terminal to run them in daemon mode and free up your terminal.
 
 ### Create and manage a virtual network
 
