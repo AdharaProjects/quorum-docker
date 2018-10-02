@@ -15,6 +15,7 @@ ADD . /app
 
 ENV PATH "$PATH:/app"
 
+RUN chmod +x ./waitForOtherNode.sh
+
 # Run start script when the container launches
-# CMD [ "bash", "startQuorum.sh" ]
 CMD [ "bash", "startQuorum.sh" ]
