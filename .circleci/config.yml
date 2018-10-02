@@ -4,7 +4,7 @@ jobs:
   build:
     working_directory: ~/tmp
     docker:
-      - image: adharaprojects/basic-docker-base:0.0.0
+      - image: adharaprojects/basic-docker-base:latest
     steps:
       - checkout
       - setup_remote_docker
@@ -12,6 +12,11 @@ jobs:
       - run:
           name: Create virtual network for test
           command: docker network create --subnet "172.10.0.0/16" circleci_test_quorum_net
+
+      - run:
+          name: Update git submodules
+          command: |
+            git submodule update --init
 
       - run:
           name: Build the the quorum docker image for the tests

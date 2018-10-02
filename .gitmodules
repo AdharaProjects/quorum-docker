@@ -1,0 +1,3 @@
+[submodule "QuorumNetworkManager"]
+	path = QuorumNetworkManager
+	url = https://github.com/ConsenSys/QuorumNetworkManager.git
