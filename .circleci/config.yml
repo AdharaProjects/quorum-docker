@@ -1,10 +1,9 @@
-
 version: 2
 jobs:
   build:
     working_directory: ~/tmp
     docker:
-      - image: adharaprojects/basic-docker-base:latest
+      - image: adharaprojects/admin-cli:a564d6
     steps:
       - checkout
       - setup_remote_docker
