@@ -1,0 +1,78 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/tmp
+    docker:
+      - image: adharaprojects/admin-cli:a564d6
+    steps:
+      - checkout
+      - setup_remote_docker
+
+      - run:
+          name: Create virtual network for test
+          command: docker network create --subnet "172.10.0.0/16" circleci_test_quorum_net
+
+      - run:
+          name: Update git submodules
+          command: |
+            git submodule update --init
+
+      - run:
+          name: Build the the quorum docker image for the tests
+          command: |
+            docker build -t adharaprojects/basic-quorum:temp-ci-test .
+
+      - run:
+          name: Start node 1
+          command: |
+            docker run --name n1 --network=circleci_test_quorum_net --ip=172.10.0.2 \
+              -e KEEP_FILES='false' \
+              -e NODE_NAME='node1' \
+              -e CONSENSUS='istanbul' \
+              -e ROLE='coordinator' \
+              -e IP='172.10.0.2' \
+              -d adharaprojects/basic-quorum:temp-ci-test
+
+      - run:
+          name: Start node 2
+          command: |
+            docker run --name n2 --network=circleci_test_quorum_net --ip=172.10.0.3 \
+              -e KEEP_FILES'=false' \
+              -e NODE_NAME'=node2' \
+              -e CONSENSUS'=istanbul' \
+              -e IP'=172.10.0.3' \
+              -e COORDINATING_IP'=172.10.0.2' \
+              -e ROLE'=dynamicPeer' \
+              -d adharaprojects/basic-quorum:temp-ci-test
+
+      - run:
+          name: Start node 3
+          command: |
+            docker run --name n3 --network=circleci_test_quorum_net --ip=172.10.0.4 \
+              -e KEEP_FILES'=false' \
+              -e NODE_NAME'=node2' \
+              -e CONSENSUS'=istanbul' \
+              -e IP'=172.10.0.4' \
+              -e COORDINATING_IP'=172.10.0.2' \
+              -e ROLE'=dynamicPeer' \
+              -d adharaprojects/basic-quorum:temp-ci-test
+      - run:
+          name: Test the 3 node network
+          command: |
+            docker run --name test --network=circleci_test_quorum_net --ip=172.10.0.5 -dt adharaprojects/node-test-env:0.0.0
+            docker cp . test:/app
+            docker exec test npm install
+            docker exec test chmod +x ./waitForOtherNode.sh
+            docker exec -e PORT=20010 -e HOST_IP=172.10.0.4 test ./waitForOtherNode.sh
+            docker exec \
+              -e NODE_1_URL='172.10.0.2' \
+              -e NODE_2_URL='172.10.0.3' \
+              -e NODE_3_URL='172.10.0.4' \
+              test npm test
+
+      - run:
+          name: Cleanup remote docker
+          command: |
+            docker stop n1 n2 n3 test
+            docker rm n1 n2 n3 test
+            docker network rm circleci_test_quorum_net
