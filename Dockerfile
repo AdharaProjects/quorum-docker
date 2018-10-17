@@ -4,10 +4,9 @@ FROM ubuntu:16.04
 WORKDIR /app
 
 RUN apt-get update -y
-RUN apt-get -y install curl
+RUN apt-get -y install curl dnsutils libsodium-dev netcat git make g++
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash
-RUN apt-get install -y nodejs libsodium-dev netcat git make g++
-
+RUN apt-get install -y nodejs
 
 # Copy the current directory contents into the container at /app
 ADD . /app
